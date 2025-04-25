@@ -1,5 +1,6 @@
 <table border="1" cellspacing="0" cellpadding="8">
   <tr style="background-color: pink; font-weight: bold;">
+   <th>Home Page</th>
     <th>Accessibility Checker Tool</th>
     <th>List of Issues</th>
   </tr>
