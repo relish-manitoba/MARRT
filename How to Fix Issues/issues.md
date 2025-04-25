@@ -1,10 +1,9 @@
 # Accessibility Issues & Fixes
 
 ---
+<a name="target-size"></a>
+## 🛑 Issue: Ensure that all interactive elements (like buttons, links, and icons) have a minimum target size of **24x24 CSS pixels**.  
 
-## 🔗 1. WCAG 2.5.8 — Target Size (Minimum)
-
-**Issue:** Ensure that all interactive elements (like buttons, links, and icons) have a minimum target size of **24x24 CSS pixels**.  
 This helps users who have mobility impairments, use touch devices, or struggle with precision when navigating.
 
 ### 📚 Resources:
