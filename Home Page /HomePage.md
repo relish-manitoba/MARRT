@@ -1,1 +1,0 @@
-[Jump to Target Size](../How%20to%20Fix%20Issues/issues.md#target-size)
