@@ -64,39 +64,27 @@ try {
   }
 
   const accessibilityAudits = Object.values(data.audits).filter(audit =>
-    audit.score !== 1 && audit.details
+    audit.score !== 1 && audit.details && Array.isArray(audit.details.items)
   );
 
   let issueCount = 0;
   accessibilityAudits.forEach(audit => {
-    if (Array.isArray(audit.details.items)) {
-      issueCount += audit.details.items.length;
-    } else {
-      issueCount++;
-    }
+    issueCount += audit.details.items.length;
   });
 
   md += '**Total Issues Found:** ' + issueCount + '\n\n';
   let counter = 1;
 
   accessibilityAudits.forEach(audit => {
-    if (Array.isArray(audit.details.items)) {
-      audit.details.items.forEach(item => {
-        const selector = item.node && item.node.selector ? item.node.selector : 'N/A';
-        const snippet = item.node && item.node.snippet ? item.node.snippet : 'N/A';
+    audit.details.items.forEach(item => {
+      const selector = item.node && item.node.selector ? item.node.selector : 'N/A';
+      const snippet = item.node && item.node.snippet ? item.node.snippet : 'N/A';
 
-        md += `## ${counter++}. ${audit.title}\n\n`;
-        md += `- **Description:** ${audit.description}\n`;
-        md += `- **Selector:** ${selector}\n`;
-        md += `- **Snippet:**\n\n\`\`\`\n${snippet}\n\`\`\`\n\n`;
-        md += `- **Details:**\n\n\`\`\`json\n${JSON.stringify(audit.details, null, 2)}\n\`\`\`\n\n`;
-      });
-    } else {
-      // For audits without an items array, include details directly
       md += `## ${counter++}. ${audit.title}\n\n`;
       md += `- **Description:** ${audit.description}\n`;
-      md += `- **Details:**\n\n\`\`\`json\n${JSON.stringify(audit.details, null, 2)}\n\`\`\`\n\n`;
-    }
+      md += `- **Selector:** ${selector}\n`;
+      md += `- **Snippet:**\n\n\`\`\`\n${snippet}\n\`\`\`\n\n`;
+    });
   });
 
   fs.writeFileSync('lighthouse_report.md', md);
