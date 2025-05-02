@@ -1944,7 +1944,7 @@
         "impact": "serious",
         "html": "<iframe width=\"172\" height=\"100\" style=\"border: 0;\" src=\"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2573.333137117339!2d-97.15323858429078!3d49.836197679395354!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x52ea75cc42c6faab%3A0xe749fe5cbf937f0c!2s1465a+Pembina+Hwy%2C+Winnipeg%2C+MB+R3T+2C5!5e0!3m2!1sen!2sca!4v1530641548881\" frameborder=\"0\" allowfullscreen=\"allowfullscreen\">",
         "target": [
-          "iframe[width=\"172\"]"
+          ".float-end > iframe"
         ],
         "failureSummary": "Fix any of the following:\n  Element has no title attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
       }
@@ -2845,7 +2845,7 @@
         "impact": "moderate",
         "html": "<a class=\"twitter-timeline\" href=\"https://twitter.com/MARRT1981\" data-tweet-limit=\"2\" data-aria-polite=\"assertive\" data-width=\"350\"> Tweets by MARRT </a>",
         "target": [
-          ".twitter-timeline:nth-child(7)"
+          ".twitter-timeline"
         ],
         "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
       },

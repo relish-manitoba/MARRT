@@ -1,61 +1,48 @@
 #!/bin/bash
 
-echo "Enter the URL to test for accessibility:"
-read url
+# Prompt for URL if not passed as argument
+if [ -z "$1" ]; then
+  echo "Enter the URL to test for accessibility:"
+  read url
+else
+  url=$1
+fi
 
-# 1. Run Lighthouse accessibility audit
-
-# 2. Create and run Axe accessibility check
-cat > axe-scan.js <<EOF
-const { chromium } = require('playwright');
-const fs = require('fs');
-
-(async () => {
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
-
-  await page.goto('$url', { waitUntil: 'domcontentloaded' });
-
-  console.log('Injecting Axe and running accessibility scan...');
-
-  await page.addScriptTag({ url: 'https://cdnjs.cloudflare.com/ajax/libs/axe-core/4.9.1/axe.min.js' });
-
-  const results = await page.evaluate(async () => {
-    return await window.axe.run();
-  });
-
-  // Save raw JSON results
-  fs.writeFileSync('axe_report.json', JSON.stringify(results.violations, null, 2));
-
-  // Now generate Markdown directly from "results"
-  let reportText = "# Axe Accessibility Violations Summary\n\n";
-  reportText += "**Total Violations Found:** " + results.violations.length + "\n\n";
-
-  results.violations.forEach(function(violation, index) {
-    reportText += "## " + (index + 1) + ". " + violation.help + "\n\n";
-    reportText += "- **Description:** " + violation.description + "\n";
-    reportText += "- **Impact:** " + violation.impact + "\n";
-    reportText += "- **Number of elements affected:** " + violation.nodes.length + "\n";
-    reportText += "- **More info:** [" + violation.helpUrl + "](" + violation.helpUrl + ")\n\n";
-  });
-
-  fs.writeFileSync("axe_report.md", reportText);
-
-  console.log("✅ Markdown accessibility report generated as axe_report.md");
-
-  await browser.close();
-})();
+# Write the Node.js processor script
+cat > pa11y-to-md.js <<'EOF'
+let data = '';
+process.stdin.on('data', chunk => data += chunk);
+process.stdin.on('end', () => {
+  try {
+    const issues = JSON.parse(data);
+    if (!Array.isArray(issues)) {
+      console.error('❗ Pa11y JSON format is invalid: expected an array.');
+      process.exit(1);
+    }
+    let md = '# Pa11y Accessibility Issues Summary\n\n';
+    md += '**Total Issues Found:** ' + issues.length + '\n\n';
+    issues.forEach((issue, i) => {
+      md += '## ' + (i + 1) + '. ' + issue.message + '\n\n';
+      md += '- **Code:** ' + issue.code + '\n';
+      md += '- **Selector:** ' + issue.selector + '\n';
+      md += '- **Type:** ' + issue.type + '\n';
+      md += '- **Type Code:** ' + issue.typeCode + '\n';
+      md += '- **Context:**\n\n```\n' + issue.context + '\n```\n\n';
+    });
+    require('fs').writeFileSync('pa11y_report.md', md);
+    console.log('✅ Pa11y Markdown report saved as pa11y_report.md');
+  } catch (err) {
+    console.error('❗ Failed to parse Pa11y JSON:', err.message);
+    process.exit(1);
+  }
+});
 
 EOF
 
+# Run Pa11y and pipe to Node.js processor
+npx pa11y "$url" --reporter json | node pa11y-to-md.js
 
+# Clean up the temporary Node.js script
+rm pa11y-to-md.js
 
-
-
-# Run the Axe scan
-node axe-scan.js
-
-echo "✅ Axe Accessibility report saved as axe_report.html"
-
-# Cleanup temporary Node.js script
-rm axe-scan.js
+echo "✅ All done!"
